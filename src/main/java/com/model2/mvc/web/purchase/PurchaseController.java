@@ -25,6 +25,7 @@ import com.model2.mvc.service.product.ProductService;
 import com.model2.mvc.service.purchase.PurchaseService;
 
 @Controller
+@RequestMapping("/purchase/*")
 public class PurchaseController {
 
 	///Field
@@ -61,7 +62,7 @@ public class PurchaseController {
 	}
 
 	///RequestMethod
-	@RequestMapping("/addPurchase.do")
+	@RequestMapping("addPurchase")
 	public ModelAndView addPurchase(@ModelAttribute("purchase")Purchase purchase,
 									@RequestParam("prodNo") int prodNo,
 									@RequestParam("quantity") int quantity,
@@ -80,7 +81,7 @@ public class PurchaseController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/addPurchaseView.do")
+	@RequestMapping("addPurchaseView")
 	public ModelAndView addPurchaseView(@RequestParam("prodNo") int prodNo) throws Exception {
 		
 		Product product = productService.getProduct(prodNo);
@@ -92,7 +93,7 @@ public class PurchaseController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/getPurchase.do")
+	@RequestMapping("getPurchase")
 	public ModelAndView addPurchase(@RequestParam("tranNo") int tranNo) throws Exception {
 		
 		Purchase purchase = purchaseService.getPurchase(tranNo);
@@ -104,7 +105,7 @@ public class PurchaseController {
 
 	}
 	
-	@RequestMapping("/listPurchase.do")
+	@RequestMapping("listPurchase")
 	public ModelAndView listPurchase(@ModelAttribute("search") Search search ,
 			  @RequestParam(value="searchOrderType", defaultValue = "orderByDateDESC") String searchOrderType,
 			  HttpSession session) throws Exception {
@@ -133,7 +134,7 @@ public class PurchaseController {
 
 	}
 	
-	@RequestMapping("/updatePurchaseView.do")
+	@RequestMapping("updatePurchaseView")
 	public ModelAndView updatePurchaseView(@RequestParam("tranNo") int tranNo) throws Exception {
 		
 		Purchase purchase = purchaseService.getPurchase(tranNo);
@@ -147,7 +148,7 @@ public class PurchaseController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/updatePurchase.do")
+	@RequestMapping("updatePurchase")
 	public ModelAndView updatePurchase(@ModelAttribute("purchase")Purchase purchase,
 									   @RequestParam("prodNo") int prodNo,
 									   @RequestParam("quantity") int quantity,
@@ -168,7 +169,7 @@ public class PurchaseController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/updateTranCode.do")
+	@RequestMapping("updateTranCode")
 	public ModelAndView updatePurchase(@ModelAttribute("purchase")Purchase purchase,
 									   @RequestParam("page") String currentPage) throws Exception {
 		
@@ -180,7 +181,7 @@ public class PurchaseController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/listCart.do")
+	@RequestMapping("listCart")
 	public ModelAndView listCart(@ModelAttribute("search")Search search,
 								 HttpSession session) throws Exception {
 		
@@ -213,7 +214,7 @@ public class PurchaseController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/addCart.do")
+	@RequestMapping("addCart")
 	public ModelAndView addCart(@RequestParam("prodNo") int prodNo,
 								@RequestParam("quantity") int quantity,
 								HttpSession session) throws Exception {

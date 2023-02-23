@@ -23,7 +23,7 @@
 
 <div style="width: 98%; margin-left: 10px;">
 
-<form name="detailForm" action="/listPurchase.do" method="post">
+<form name="detailForm" action="listPurchase" method="post">
 
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
@@ -124,11 +124,11 @@
 		<tr class="ct_list_pop">
 		<td align="center">
 			
-			<a href="/getPurchase.do?tranNo=${purchase.tranNo}">${purchase.tranNo}</a>
+			<a href="getPurchase?tranNo=${purchase.tranNo}">${purchase.tranNo}</a>
 		</td>
 		<td></td>
 		<td align="left">
-			<a href="/getUser.do?userId=${purchase.buyer.userId}">${purchase.buyer.userId}</a>
+			<a href="../user/getUser?userId=${purchase.buyer.userId}">${purchase.buyer.userId}</a>
 		</td>
 		<td></td>
 		<td align="left">${purchase.receiverName}</td>
@@ -160,10 +160,10 @@
 		<td></td> 
    		<td align="left">
 		<c:if test = "${purchase.tranCode eq '1' && user.role eq 'admin' }">
-			<a href="/updateTranCode.do?tranNo=${purchase.tranNo}&tranCode=2&page=${resultPage.currentPage}">배송하기</a>
+			<a href="updateTranCode?tranNo=${purchase.tranNo}&tranCode=2&page=${resultPage.currentPage}">배송하기</a>
 		</c:if>
 		<c:if test = "${purchase.tranCode eq '2' && user.role eq 'user'}">
-			<a href="/updateTranCode.do?tranNo=${purchase.tranNo}&tranCode=3&page=${resultPage.currentPage}">물건도착</a>
+			<a href="updateTranCode?tranNo=${purchase.tranNo}&tranCode=3&page=${resultPage.currentPage}">물건도착</a>
 		</c:if>
 		</td>
 	</tr>

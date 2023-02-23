@@ -17,6 +17,7 @@ import com.model2.mvc.service.domain.Product;
 import com.model2.mvc.service.product.ProductService;
 
 @Controller
+@RequestMapping("/product/*")
 public class ProductController {
 	
 	///Field
@@ -41,29 +42,26 @@ public class ProductController {
 	}
 	
 	///RequestMethod
-	@RequestMapping("/addProduct.do")
+	@RequestMapping("addProduct")
 	public String addProduct(@ModelAttribute("product") Product product) throws Exception {
-		System.out.println("/addProduct.do");
 		product.setManuDate(product.getManuDate().replaceAll("-", ""));
 		productService.addProduct(product);
 		return "forward:/product/addProductView.jsp";
 	}
 	
-	@RequestMapping("/getProduct.do")
+	@RequestMapping("getProduct")
 	public String getProduct(@RequestParam("prodNo") int prodNo, @RequestParam(value="menu", defaultValue="search") String menu, Model model) throws Exception {
-		System.out.println("/getProduct.do");
 		Product product = productService.getProduct(prodNo);
 		model.addAttribute("product", product);
 		model.addAttribute("menu", menu);
 		return "forward:/product/getProductView.jsp";
 	}
 	
-	@RequestMapping("/listProduct.do")
+	@RequestMapping("listProduct")
 	public String listProduct(@ModelAttribute("search") Search search , Model model,
 							  @RequestParam(value="searchMinPrice", defaultValue = "0") int searchMinPrice, 
 							  @RequestParam(value="searchMaxPrice", defaultValue = "0") int searchMaxPrice,
 							  @RequestParam(value="searchOrderType", defaultValue = "orderByDateDESC") String searchOrderType) throws Exception {
-		System.out.println("/listProduct.do");
 		
 		if (searchMaxPrice < searchMinPrice) {
 			int tmp=0;
@@ -94,7 +92,7 @@ public class ProductController {
 	
 	
 	
-	@RequestMapping("/updateProduct.do")
+	@RequestMapping("updateProduct")
 	public String updateProduct(@ModelAttribute("product") Product product , Model model,
 								@RequestParam("menu") String menu) throws Exception {
 		productService.updateProduct(product);

@@ -24,7 +24,7 @@ function fncAddPurchase(prodNo) {
 <body>
 
 
-<form name="addPurchase" method="post" action="/addPurchase.do">
+<form name="addPurchase" method="post" action="addPurchase">
 <input type = "hidden" name ="tranCode" value = "1"/>
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>

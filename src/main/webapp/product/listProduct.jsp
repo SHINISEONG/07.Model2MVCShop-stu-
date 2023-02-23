@@ -25,7 +25,7 @@
 		document.getElementById("menu").value = menu;
 		document.getElementById("prodNo").value = prodNo;
 		document.getElementById("tranCode").value = tranCode;
-		document.detailForm.action='/updateTranCodeByProd.do';
+		document.detailForm.action='updateTranCodeByProd';
 	   	document.detailForm.submit();		
 	}
 </script>
@@ -37,7 +37,7 @@
 
 <div style="width:98%; margin-left:10px;">
 
-<form name="detailForm" action="/listProduct.do" method="post">
+<form name="detailForm" action="listProduct" method="post">
 
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
@@ -152,12 +152,12 @@
 			<td align="left">
 				<c:choose>
 					<c:when test = "${product.stock > 0}">
-						<a href="/getProduct.do?prodNo=${product.prodNo}&menu=${param.menu}"> ${product.prodName}</a>
+						<a href="getProduct?prodNo=${product.prodNo}&menu=${param.menu}"> ${product.prodName}</a>
 					</c:when>
 					<c:otherwise>
 						<c:choose>
 							<c:when test = "${user.role eq 'admin'}">
-								<a href="/getProduct.do?prodNo=${product.prodNo }&menu=${param.menu}">${product.prodName}</a>
+								<a href="getProduct?prodNo=${product.prodNo }&menu=${param.menu}">${product.prodName}</a>
 							</c:when>
 							<c:otherwise>
 								${product.prodName }

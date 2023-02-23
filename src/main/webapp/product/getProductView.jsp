@@ -36,13 +36,13 @@ function fncAddProduct(){
 		return;
 	}
 		
-	document.detailForm.action='/updateProduct.do';
+	document.detailForm.action='updateProduct';
 	document.detailForm.submit();
 }
 
 function fncAddCart(){
 	
-	document.detailForm.action='/addCart.do';
+	document.detailForm.action='../purchase/addCart';
 	document.detailForm.submit();
 }
 
@@ -313,7 +313,7 @@ function resetData(){
 							<a href="javascript:fncAddProduct();">수정</a>
 						</c:when>
 						<c:when test = "${param.menu eq 'search' && !(user.role eq 'admin')}">
-							<a href="/addPurchaseView.do?prodNo=${product.prodNo }">구매</a>
+							<a href="../purchase/addPurchaseView?prodNo=${product.prodNo }">구매</a>
 						</c:when>
 					</c:choose>
 					</td>
@@ -342,7 +342,7 @@ function resetData(){
 				</c:when>
 				<c:when test = "${param.updateChecker}">
 					<td background="/images/ct_btnbg02.gif" class="ct_btn01"  style="padding-top: 3px;">
-					<a href="/listProduct.do?menu=manage">확인</a>
+					<a href="listProduct?menu=manage">확인</a>
 					</td>
 				</c:when>
 				</c:choose>

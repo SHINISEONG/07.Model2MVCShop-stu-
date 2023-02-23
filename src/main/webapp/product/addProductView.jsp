@@ -36,7 +36,7 @@ function fncAddProduct(){
 		return;
 	}
 
-	document.detailForm.action='/addProduct.do';
+	document.detailForm.action='addProduct';
 	document.detailForm.submit();
 }
 
@@ -234,7 +234,7 @@ function resetData(){
 						<a href="javascript:fncAddProduct();">등록</a>
 					</c:when>
 					<c:when test = "${!empty product }">
-					<a href="/listProduct.do?menu=manage">확인</a>
+					<a href="listProduct?menu=manage">확인</a>
 					</c:when>
 				</c:choose>				
 				</td>

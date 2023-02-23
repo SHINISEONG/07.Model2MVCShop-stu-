@@ -8,7 +8,7 @@
 
 <body>
 
-	<form name="addPurchase" action="/updatePurchaseView.do?tranNo=0"
+	<form name="addPurchase" action="updatePurchaseView?tranNo=0"
 		method="post">
 
 		다음과 같이 구매가 되었습니다.
