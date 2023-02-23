@@ -1,0 +1,209 @@
+Model2SHOP QUERY
+
+----01. User-------------------------------------------------------------------------------------------
+
+SELECT * 
+FROM (SELECT ROWNUM as num, user_id, user_name, password, role, ssn, cell_phone, addr, email, reg_date 
+	FROM (SELECT * FROM users ORDER BY user_id) iv
+      )iv2
+WHERE iv2.num BETWEEN ? AND ?;
+
+
+SELECT COUNT(user_id) total FROM users;
+
+SELECT u.*, iv.num "num" FROM users u, ( SELECT ROWNUM as num , user_id FROM users ORDER BY user_id) iv
+WHERE u.user_id = iv.user_id
+AND num BETWEEN 2 and 5;
+
+SELECT u.*, iv.num num FROM users u, ( SELECT ROWNUM as num , user_id FROM users  ORDER BY user_id) iv  WHERE u.user_id = iv.user_id  AND (num >= 1 and num <= 3 ) ;
+
+
+SELECT iv.*, total.total FROM
+		(
+		 SELECT * FROM users
+		 ORDER BY user_id
+		) iv,
+		(SELECT count(user_id) total FROM users
+		) total
+WHERE ROWNUM <=4;
+
+		
+SELECT iv.*, total.total FROM
+		(
+		 SELECT * FROM users ORDER BY user_id 
+		 
+		 WHERE user_id = ?
+		
+		) iv,
+		(
+		 SELECT count(user_id) total FROM users
+		 WHERE user_id = ?
+		) total
+WHERE ROWNUM >=? AND ROWNUM<=?
+
+
+
+
+SELECT
+	e.부서명, e.직원명, e.급여, e.커미션
+	FROM
+	(
+		SELECT
+		d.department_name 부서명, e.first_name 직원명, e.salary 급여, NVL(e.commission_pct,0) 커미션
+		FROM
+		employees e , departments d
+		WHERE
+		e.department_id = d.department_id
+		ORDER BY 커미션 DESC, e.salary DESC
+	)e
+	WHERE ROWNUM <= 4;
+
+
+
+
+----02. Product------------------------------------------------------------------------------------------
+
+rootSql = SELECT prod_no, prod_name, price, reg_date 
+		FROM product
+[검색 상태에 따른 WHERE 절]
+
+CountSQL = 
+
+SELECT COUNT(*) total
+FROM
+(SELECT prod_no, prod_name, price, reg_date 
+	FROM product )
+
+
+Product crrentpagesqsl SQL =
+
+SELECT iv2.*, t.tran_no, t.tran_status_code
+FROM
+(SELECT ROWNUM num, iv.*
+	FROM (SELECT prod_no, prod_name, price, reg_date 
+		FROM product ORDER BY prod_no) iv ) iv2, transaction t
+WHERE iv2.prod_no = t.prod_no(+)
+AND num BETWEEN 2 AND 4
+
+
+
+01. insertProduct()
+	
+	INSERT INTO product VALUES(seq_product_prod_no.NEXTVAL, '놑투북', '노트북이에용',
+				'20220801', '1000000', 'image.jpg', sysdate);
+
+	INSERT INTO product VALUES(seq_product_prod_no.NEXTVAL, ?, ?,
+				?, ?, ?, sysdate)
+
+02. findProduct()
+	
+	SELECT * FROM product WHERE prod_name = '보르도'  ;
+	SELECT * FROM product WHERE prod_name = ?
+
+	SELECT p.*, t.tran_status_code tranNo FROM product p, transaction t WHERE p.prod_no = t.prod_no AND prod_name='보르도';
+
+	SELECT p.*, t.tran_status_code tranNo FROM product p, transaction t WHERE p.prod_no = t.prod_no AND p.prod_no = 10001;
+	SELECT p.*, t.tran_status_code tranNo FROM product p, transaction t WHERE p.prod_no = t.prod_no AND p.prod_no = ?
+
+03. updateProduct()
+
+	UPDATE product SET prod_name='후히히', prod_detail='디테이루', manufacture_day='20230101', price=100, image_file='img.jpg' WHERE prod_no=10002;
+	UPDATE product SET prod_name=?, prod_detail=?, manufacture_day=?, price=?, image_file=? WHERE prod_no=?
+
+04. getProductList()
+
+	select p.*, NVL(t.tran_status_code,0) tranCode from PRODUCT p, transaction t
+	WHERE p.prod_no = t.prod_no(+);
+
+	SELECT p.*, iv.TRAN_STATUS_CODE
+	FROM product p, ( SELECT NVL(t.tran_status_code,0) "TRAN_STATUS_CODE"
+			  FROM product p, transaction t
+			  WHERE p.prod_no = t.prod_no ) iv;
+
+SELECT count(prod_no) FROM product where ;
+	
+SELECT p.*, NVL(t.tran_status_code,0) tran_code, NVL(t.tran_no,0) tran_no FROM product p, transaction t, (
+
+
+SELECT iv.num, p.*, NVL(t.tran_status_code,0) tran_code, NVL(t.tran_no,0) tran_no FROM product p, transaction t, (SELECT ROWNUM as num, prod_no FROM product ORDER BY prod_no) iv
+WHERE p.prod_no = t.prod_no(+)
+AND p.prod_no = iv.prod_no;
+
+----03. Purchase ------------------------------------------------------------------------------------
+
+root
+
+SELECT tran_no, buyer_id, receiver_name, receiver_phone, tran_status_code FROM transaction WHERE buyer_id = 'user17' ORDER BY tran_no
+
+count
+
+SELECT count(*) total
+FROM(SELECT tran_no, buyer_id, receiver_name, receiver_phone, tran_status_code FROM transaction WHERE buyer_id = 'user17' ORDER BY tran_no)
+
+rownum
+
+SELECT * FROM
+(SELECT ROWNUM num, iv.* FROM(SELECT tran_no, buyer_id, receiver_name, receiver_phone, tran_status_code FROM transaction WHERE buyer_id = 'user17' ORDER BY tran_no)iv)
+WHERE num BETWEEN 2 AND 4
+
+
+SELECT count(tran_no) total from transaction;
+
+SELECT iv.num num , t.*
+FROM transaction t, (SELECT ROWNUM as num, vt.tran_no FROM (SELECT tran_no FROM transaction WHERE buyer_id = 'user17' ORDER BY tran_no) vt ) iv 
+WHERE t.tran_no = iv.tran_no AND buyer_id = 'user17' and (num >= 2 and num <= 4);
+
+
+01. insertPurchase()
+	
+	INSERT INTO transaction VALUES(seq_transaction_tran_no.NEXTVAL, 10001, 'user01', '1', 
+	'신희성', '01012341234', '갱기도', '조심히오세요', 
+	'cod', sysdate,'2012/12/12');
+
+	INSERT INTO transaction VALUES(seq_transaction_tran_no.NEXTVAL,
+					?, ?, ?, ?, ?, ?, ?, ? , sysdate,?)
+
+02. findPurchase()
+
+	SELECT * FROM transaction WHERE TRAN_NO = ?
+
+03. getPurchaseList()
+	
+	SELECT * FROM transaction WHERE BUYER_ID = ?
+
+04. updatePurchase()
+
+	UPDATE transaction SET payment_option=?, receiver_name=?, receiver_phone=?, dlvy_addr=?, dlvy_request=?, dlvy_date=? WHERE tran_no=?
+
+05. getSaleList()
+
+	SELECT p.prod_no
+	FROM product p, transaction t
+	WHERE p.prod_no = t.prod_no
+
+	SELECT p.prod_no prodNo FROM product p, transaction t WHERE p.prod_no = t.prod_no
+	
+	SELECT prod_no prodNo, tran_no tranNo FROM transaction;
+	SELECT prod_no prodNo, tran_no tranNo FROM transaction
+
+	SELECT t.prod_no prodNo, t.tran_no tranNo, u.user_id FROM users u, transaction t 
+	WHERE u.user_id = t.buyer_id
+	AND u.user_id = 'user17';
+	
+	SELECT prod_no prodNo, tran_no tranNo FROM transaction WHERE prod_no = 10001;
+	SELECT prod_no prodNo, tran_no tranNo FROM transaction WHERE prod_no = ?
+	
+	---user---
+
+	SELECT t.prod_no prodNo, t.tran_no tranNo, u.user_id FROM users u, transaction t 
+	WHERE u.user_id = t.buyer_id
+	AND u.user_id = ?
+
+	---admin---
+
+	SELECT t.prod_no prodNo, t.tran_no tranNo, u.user_id FROM users u, transaction t 
+	WHERE u.user_id = t.buyer_id
+
+06. updateTranCode()
+
+	UPDATE transaction SET tran_status_code=? WHERE tran_no=?

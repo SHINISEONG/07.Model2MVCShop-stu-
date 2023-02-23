@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ProductMapper">
+
+	<resultMap id="productSelectMap" type="product">
+		<result property="prodNo" 			column="prod_no" 			jdbcType="NUMERIC"/>
+		<result property="prodName"			column="prod_name" 			jdbcType="VARCHAR" />
+		<result property="prodDetail" 		column="prod_detail" 		jdbcType="VARCHAR" />
+		<result property="manuDate" 		column="manufacture_day"	jdbcType="VARCHAR" />
+		<result property="price" 			column="price" 				jdbcType="NUMERIC" />
+		<result property="fileName" 		column="image_file" 		jdbcType="VARCHAR" />
+		<result property="regDate" 			column="reg_date" 			jdbcType="DATE" />
+		<result property="stock"			column="stock"				jdbcType="NUMERIC"/> 
+	</resultMap>
+	
+	<!-- SQL : INSERT -->
+	<insert id="addProduct"		parameterType="product" >
+	 	INSERT 
+	 	INTO product (prod_no, prod_name, prod_detail, manufacture_day, price, image_file, reg_date)
+	 	VALUES		 (seq_product_prod_no.NEXTVAL, #{prodName}, #{prodDetail}, #{manuDate}, #{price}, #{fileName}, SYSDATE)
+	 </insert>
+	 
+	 <insert id="addStock"		parameterType="product" >
+	 	INSERT 
+	 	INTO stock  (prod_no, stock)
+	 	VALUES		(seq_product_prod_no.CURRVAL, #{stock})
+	 </insert>
+	 
+	 <!-- SQL : SELECT ONE -->
+	 <select 	id="getProduct"	parameterType="int"	resultMap="productSelectMap">
+		SELECT
+		p.*, NVL(s.stock,0) stock
+		FROM product p, stock s 
+		WHERE p.prod_no = s.prod_no(+) 
+		AND p.prod_no = #{prodNo} 
+	 </select>
+	 
+	 
+	 <!-- SQL : UPDATE -->
+	 <update	id="updateProduct"	parameterType="product" >
+	    UPDATE product
+	    <set> 
+	    prod_name		=	#{prodName:VARCHAR}, 
+	    prod_detail		=	#{prodDetail:VARCHAR}, 
+	    manufacture_day	=	#{manuDate:VARCHAR}, 
+	    price			=	#{price:NUMERIC}, 
+	    image_file		=	#{fileName:VARCHAR}
+		</set>
+		WHERE prod_no = #{prodNo}
+	 </update>
+	 
+	 <update	id="updateStock"	parameterType="product" >
+	    UPDATE stock
+	    <set> 
+	    stock = #{stock}
+		</set>
+		WHERE prod_no = #{prodNo}
+	 </update>
+	 
+
+	<!-- SQL : SELECT LIST -->
+	<select  id="getProductList"  parameterType="search"	resultMap="productSelectMap">
+	  SELECT * 
+	  FROM (SELECT inner_table.*, ROWNUM AS row_seq
+		  	FROM   (SELECT p.prod_no, p.prod_name, p.price, p.reg_date, NVL(s.stock,0) stock 
+					FROM product p, stock s, (
+											  SELECT prod_no, quantity
+											  FROM cart
+											  WHERE tran_no = #{cartTranNo}	
+											 )cart
+					<where>
+						p.prod_no = s.prod_no(+)
+						<if test="cartTranNo == 0">
+							AND p.prod_no = cart.prod_no(+)
+						</if>
+						<if test="cartTranNo != 0">
+							AND p.prod_no = cart.prod_no
+						</if>
+					  	<if test="searchCondition != null and 
+					  				(searchKeyword != null or (searchMinPrice + searchMaxPrice != 0))">
+					  		<if test="searchCondition == 0 and searchKeyword != ''">
+					  			AND p.prod_no=#{searchKeyword}
+					  		</if>
+					  		<if test="searchCondition == 1 and searchKeyword != ''">
+					  			AND p.prod_name LIKE '%'||#{searchKeyword}||'%'
+					  		</if>
+					  		<if test="searchCondition == 2 and searchKeyword != ''">
+					  			AND p.price BETWEEN #{searchMinPrice} AND #{searchMaxPrice}
+					  		</if>
+					  	</if>
+				  	</where>
+				  	<if test ="searchOrderType == 'orderByDateDESC'.toString()">
+				  		ORDER BY p.reg_date DESC
+				  	</if>
+				  	<if test ="searchOrderType == 'orderByDateASC'.toString()">
+				  		ORDER BY p.reg_date ASC
+				  	</if>
+				  	<if test ="searchOrderType == 'orderByPriceDESC'.toString()">
+				  		ORDER BY p.price DESC
+				  	</if>
+				  	<if test ="searchOrderType == 'orderByPriceASC'.toString()">
+				  		ORDER BY p.price ASC
+				  	</if>
+				  	) inner_table
+			WHERE ROWNUM &lt;= #{endRowNum} )
+		WHERE row_seq &gt;= #{startRowNum}
+	 </select>
+	
+	
+	 	<!--  위 두번째 subQuery 의  
+	 			WHERE ROWNUM &lt;= #{endRowNum} ) 는
+	 			WHERE ROWNUM <= #{endRowNum} ) 의미이며..
+	 			< 는 keyword 로 &lt; 를	사용.
+	 			
+	 			<![CDATA[  ~~~  ]]> 를 이용하여 아래와 같이 사용  할 수 있다.
+	 			CDATA ==> Character Data 의 의미 Java 에서 \n 같은 특수문자 처리  
+
+				WHERE ROWNUM <![CDATA[ <=]]> #{endRowNum} )
+		-->
+	
+	 <!-- SQL : SELECT ROW Count -->	 
+	 <select  id="getTotalCount"  parameterType="search"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM( SELECT p.prod_no, p.prod_name, p.price, p.reg_date, NVL(s.stock,0) stock 
+					FROM product p, stock s, (
+											  SELECT prod_no
+											  FROM cart
+											  WHERE tran_no = #{cartTranNo}	
+											  )cart
+			  <where>
+				p.prod_no = s.prod_no(+)
+				<if test="cartTranNo == 0">
+					AND p.prod_no = cart.prod_no(+)
+				</if>
+				<if test="cartTranNo != 0">
+					AND p.prod_no = cart.prod_no
+				</if>
+				<if test ="cartTranNo == 0 or cartTranNo == null">
+					AND p.prod_no = cart.prod_no(+)
+				</if>
+				<if test ="cartTranNo != 0 and cartTranNo != null">
+					AND p.prod_no = cart.prod_no
+				</if>
+			  	<if test="searchCondition != null and 
+			              (searchKeyword != null or (searchMinPrice + searchMaxPrice != 0))">
+					<if test="searchCondition == 0 and searchKeyword != ''">
+						AND p.prod_no=#{searchKeyword}
+					</if>
+					<if test="searchCondition == 1 and searchKeyword != ''">
+						AND p.prod_name LIKE '%'||#{searchKeyword}||'%'
+					</if>
+					<if test="searchCondition == 2 and searchKeyword != ''">
+						AND p.price BETWEEN #{searchMinPrice} AND #{searchMaxPrice}
+					</if>
+			  	</if>
+			  </where> ) countTable						
+	 </select>
+	
+</mapper>
