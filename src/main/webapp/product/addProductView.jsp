@@ -49,7 +49,7 @@ function resetData(){
 
 <body bgcolor="#ffffff" text="#000000">
 
-<form name="detailForm" method="post">
+<form name="detailForm" method="post" enctype="multipart/form-data">
 
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
@@ -203,7 +203,7 @@ function resetData(){
 		<td class="ct_write01">
 			<c:choose>
 				<c:when test = "${empty product }">
-					<input	type="text" name="fileName" class="ct_input_g" 
+					<input	type="file" name="file" class="ct_input_g" 
 							style="width: 200px; height: 19px" maxLength="13"/>
 				</c:when>
 				

@@ -1,5 +1,6 @@
 package com.model2.mvc.web.product;
 
+import java.io.File;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
@@ -35,6 +37,9 @@ public class ProductController {
 	
 	@Value("#{commonProperties['pageSize'] ?: 2}")
 	int pageSize;
+	
+	@Value("#{commonProperties['fileUploadPath']}")
+	String fileUploadPath;
 			
 	///Constructor
 	public ProductController() {
@@ -61,7 +66,8 @@ public class ProductController {
 	public String listProduct(@ModelAttribute("search") Search search , Model model,
 							  @RequestParam(value="searchMinPrice", defaultValue = "0") int searchMinPrice, 
 							  @RequestParam(value="searchMaxPrice", defaultValue = "0") int searchMaxPrice,
-							  @RequestParam(value="searchOrderType", defaultValue = "orderByDateDESC") String searchOrderType) throws Exception {
+							  @RequestParam(value="searchOrderType", defaultValue = "orderByDateDESC") String searchOrderType
+							  ) throws Exception {
 		
 		if (searchMaxPrice < searchMinPrice) {
 			int tmp=0;
@@ -94,12 +100,17 @@ public class ProductController {
 	
 	@RequestMapping("updateProduct")
 	public String updateProduct(@ModelAttribute("product") Product product , Model model,
-								@RequestParam("menu") String menu) throws Exception {
+								@RequestParam("menu") String menu,
+								@RequestParam("file") MultipartFile file) throws Exception {
+		product.setFileName(file.getOriginalFilename());
+		
+		
+		file.transferTo(new File(fileUploadPath+product.getFileName()));
 		productService.updateProduct(product);
 		boolean updateChecker = true;
 		model.addAttribute("updateChecker", updateChecker);
 		
-		return "redirect:/getProduct.do?prodNo=" + product.getProdNo() + "&menu="+menu;
+		return "redirect:/product/getProduct?prodNo=" + product.getProdNo() + "&menu="+menu;
 	}	
 
 }
