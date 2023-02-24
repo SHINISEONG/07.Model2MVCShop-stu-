@@ -1,6 +1,7 @@
 package com.model2.mvc.service.domain;
 
 import java.sql.Date;
+import java.util.List;
 
 
 public class Product {
@@ -13,6 +14,7 @@ public class Product {
 	private int prodNo;
 	private Date regDate;
 	private int stock;
+	private String[] fileNames;
 	
 	//TODO 재고 구현후 뷰 파트까지 리팩토링 끝나면 아래 필드 지우기
 
@@ -70,6 +72,19 @@ public class Product {
 
 	public void setStock(int stock) {
 		this.stock = stock;
+	}
+
+
+	
+
+	public String[] getFileNames() {
+		this.fileName.split(",");
+		return fileNames;
+	}
+
+
+	public void setFileNames(String[] fileNames) {
+		this.fileNames = fileNames;
 	}
 
 

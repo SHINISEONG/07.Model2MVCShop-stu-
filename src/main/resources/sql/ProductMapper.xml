@@ -18,6 +18,7 @@
 	</resultMap>
 	
 	<!-- SQL : INSERT -->
+	
 	<insert id="addProduct"		parameterType="product" >
 	 	INSERT 
 	 	INTO product (prod_no, prod_name, prod_detail, manufacture_day, price, image_file, reg_date)
@@ -29,6 +30,18 @@
 	 	INTO stock  (prod_no, stock)
 	 	VALUES		(seq_product_prod_no.CURRVAL, #{stock})
 	 </insert>
+	 
+	 <insert id="addImage"		parameterType="map">
+		INSERT
+		INTO images (prod_no, image_file)
+		VALUES		(#{prodNo}, #{fileName})
+	</insert>
+	
+	<select id="getImageCount"	parameterType="Integer" resultType="int">
+		SELECT COUNT(*)
+		FROM images
+		WHERE prod_no = #{prodNo}
+	</select>
 	 
 	 <!-- SQL : SELECT ONE -->
 	 <select 	id="getProduct"	parameterType="int"	resultMap="productSelectMap">
@@ -61,6 +74,13 @@
 		WHERE prod_no = #{prodNo}
 	 </update>
 	 
+	 <update	id="updateImage"	parameterType="product" >
+	    UPDATE images
+	    <set> 
+	    stock = #{stock}
+		</set>
+		WHERE prod_no = #{prodNo}
+	 </update>
 
 	<!-- SQL : SELECT LIST -->
 	<select  id="getProductList"  parameterType="search"	resultMap="productSelectMap">
@@ -122,7 +142,8 @@
 				WHERE ROWNUM <![CDATA[ <=]]> #{endRowNum} )
 		-->
 	
-	 <!-- SQL : SELECT ROW Count -->	 
+	 <!-- SQL : SELECT ROW Count -->
+	 	 
 	 <select  id="getTotalCount"  parameterType="search"	 resultType="int">
 	  	SELECT COUNT(*)
 	  	FROM( SELECT p.prod_no, p.prod_name, p.price, p.reg_date, NVL(s.stock,0) stock 

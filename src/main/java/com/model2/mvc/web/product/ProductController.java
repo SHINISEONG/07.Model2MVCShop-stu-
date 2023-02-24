@@ -1,6 +1,7 @@
 package com.model2.mvc.web.product;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
@@ -48,8 +50,11 @@ public class ProductController {
 	
 	///RequestMethod
 	@RequestMapping("addProduct")
-	public String addProduct(@ModelAttribute("product") Product product) throws Exception {
+	public String addProduct(@ModelAttribute("product") Product product,
+							 @RequestParam("file") MultipartFile file) throws Exception {
 		product.setManuDate(product.getManuDate().replaceAll("-", ""));
+		product.setFileName(file.getOriginalFilename());
+		file.transferTo(new File(fileUploadPath+product.getFileName()));
 		productService.addProduct(product);
 		return "forward:/product/addProductView.jsp";
 	}
@@ -101,10 +106,20 @@ public class ProductController {
 	@RequestMapping("updateProduct")
 	public String updateProduct(@ModelAttribute("product") Product product , Model model,
 								@RequestParam("menu") String menu,
-								@RequestParam("file") MultipartFile file) throws Exception {
+								@RequestParam("file") MultipartFile file,
+								MultipartHttpServletRequest files) throws Exception {
 		product.setFileName(file.getOriginalFilename());
 		
+		List<MultipartFile> fileList = files.getFiles("files");
+		String filenames = null;
 		
+		for(int i = 0; i<fileList.size(); i++) {
+			fileList.get(i).transferTo(new File(fileUploadPath+(fileList.get(i).getOriginalFilename())));
+			filenames += (i!=0)?(","+(fileList.get(i).getOriginalFilename())):(fileList.get(i).getOriginalFilename());
+		}
+		
+		product.setFileName(filenames);
+		product.setFileNames(filenames.split(","));
 		file.transferTo(new File(fileUploadPath+product.getFileName()));
 		productService.updateProduct(product);
 		boolean updateChecker = true;

@@ -144,6 +144,9 @@ function resetData(){
 			</td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01">
+				<c:forEach var="fileName" items="product.fileNames">
+					<img src="/images/uploadFiles/${fileName }" width="300" height="300" />
+				</c:forEach>
 						<img src="/images/uploadFiles/${product.fileName }" width="300" height="300" />
 			</td>
 		</tr>
@@ -231,6 +234,7 @@ function resetData(){
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01">
 				<input type="file" name="file"  class="ct_input_g"	style="width: 100px; height: 19px" maxLength="20">
+				<input type="file" name="files"  multiple="multiple" class="ct_input_g"	style="width: 100px; height: 19px" maxLength="20">
 				<input type="hidden" name="fileName"  value="${product.fileName}">
 			</td>
 		</tr>

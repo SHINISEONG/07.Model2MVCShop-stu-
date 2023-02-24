@@ -41,11 +41,6 @@ CREATE TABLE product (
 	PRIMARY KEY(prod_no)
 );
 
-CREATE TABLE images (
-	prod_no					NUMBER				NOT NULL REFERENCES product(prod_no),
-	image_file 					VARCHAR2(100)
-);
-
 CREATE TABLE stock ( 
 	prod_no 					NUMBER(16)		NOT NULL REFERENCES product(prod_no),
 	stock							NUMBER(16),
